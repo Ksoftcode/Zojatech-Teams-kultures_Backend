@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class users extends Model
+class search extends Model
 {
     use HasFactory;
     protected $guarded = ['id'];
@@ -15,7 +15,7 @@ class users extends Model
         'lastname',
         'username',
         'email',
-        'password',
+        
     ];
     // public function firstname()
     // {
@@ -34,18 +34,20 @@ class users extends Model
     // {
     //     return $this->belongsTo(email::class);
     // }
-    // public function scopeSearchUsers($q, $name)
+    // public function scopeSearch($q, $name)
     // {
     //     return $q->where('users_name', 'LIKE', '%' . $name . '%')
     //         ->orwhere('users_code', 'like', '%' . $name . '%')
     //         ->get();;
     // }
-     public function user()
+    public function search()
     {
-       return $this->belongsTo(users::class);
-     }
+        return $this->belongsTo(search::class);
+    }
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
 }
+
+
 
