@@ -32,7 +32,9 @@ Route::post('/passwordReset', [ AuthController::class,'passwordReset']);
 Route::post('/CodeCheck', [AuthController::class, 'codeCheck']); 
 Route::post('/PasswordResetOpt', [AuthController::class, 'PasswordResetOpt']);
 Route::post('/search', [SearchController::class, 'search']); 
-Route::post('/upload', [FileUploadController::class, 'fileupload']); 
+Route::post('/upload', [FileUploadController::class, 'fileupload']);
+Route::post('/filter', [SearchController::class, 'filter']); 
+
 
 
 
