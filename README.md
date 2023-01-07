@@ -64,3 +64,5 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+Hi everyone this is an application called kulture also known as zojaplay, it is an app that allows users to uploade and sell there beaats and in return make money from it is user friendly tool which let users interact with one another and also make money from it
