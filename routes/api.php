@@ -34,15 +34,14 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/forgetPassword', [AuthController::class, 'forgetPassword']); 
 Route::post('/passwordReset', [ AuthController::class,'passwordReset']);  
 Route::post('/logout', [AuthController::class, 'logout']);
-
 Route::post('/CodeCheck', [AuthController::class, 'codeCheck']); 
 Route::post('/PasswordResetOpt', [AuthController::class, 'PasswordResetOpt']);
-Route::post('/search', [SearchController::class, 'search']); 
-Route::post('/upload', [FileUploadController::class, 'fileupload']);
-Route::post('/filter', [SearchController::class, 'filter']); 
-Route::get('/status', [StatusController::class, 'status']); 
-Route::post('/create', [ CrudController::class, 'create']); 
-Route::post('/update', [ CrudController::class, 'update']); 
+Route::post('/search', [AuthController::class, 'search']); 
+Route::post('/upload', [AuthController::class, 'fileupload']);
+Route::post('/update/{id}', [ AuthController::class, 'update']); 
+Route::post('/paystack-pay', [ AuthController::class,'redirectToGateway'])->name('pay');
+Route::get('/payment/callback', [ AuthController::class,'handleGatewayCallback']);
+
 
 
 
