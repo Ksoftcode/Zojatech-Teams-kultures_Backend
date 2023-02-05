@@ -7,7 +7,8 @@ use App\Http\Requests\registerRequest;
 use App\Http\Requests\forgetPasswordReques;
 use App\Http\Requests\passwordResetRequest;
 use App\Http\Requests\codeCheckRequest;
-
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Auth\Events\Verified;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\user;
@@ -35,7 +36,7 @@ class AuthController extends Controller
                    
        'firstname'=>'required|string',
        'lastname'=>'required|string',
-       'username'=>'required|string',
+       'username'=>'required|string|unique:users',
        'email'=> 'required|string|unique:users',
        'country'=>'required|string',
        'state'=>'required|string',
@@ -64,7 +65,14 @@ class AuthController extends Controller
        ]);
        $user->save();
        $token=rand(000,99999);
+    // $token = $user->createToken('authtoken');
        return response()->json(['message'=>'sucessfuly registered ',$user,$token],200);
+    // return response()->json(
+    //     [
+    //         'message'=>'User Registered',
+    //         'data'=> ['token' => $token->plainTextToken, 'users' => $user]
+    //     ]
+    // );
        
            }
            // login
@@ -213,7 +221,7 @@ class AuthController extends Controller
        }
        // fileUpload Code
        
-       public function fileupload(Request $request){
+       public function fileupload(Request $request ){
            $file=new File();
        
                 $file->files=$request->file('file')->store('apiFile');
@@ -259,7 +267,7 @@ class AuthController extends Controller
         public function update(Request $request, $id) 
            {
                try {
-                   dd($id);
+                   
                    $findCrud = Crud::findorfail($id);
                    $findCrud->country = $request->country ;
                    $findCrud->state = $request->state;
@@ -273,6 +281,36 @@ class AuthController extends Controller
                    //throw $th;
                 return response()->json(['message'=>'updated sucessfully'],200);
                }
-          
+        //   email verification code.
+
+
+           } public function sendVerificationEmail(Request $request)
+           {
+               if ($request->users()->hasVerifiedEmail()) {
+                   return [
+                       'message' => 'Already Verified'
+                   ];
+               }
+       
+               $request->users()->sendEmailVerificationNotification();
+       
+               return ['status' => 'verification-link-sent'];
+           }
+       
+           public function verify(EmailVerificationRequest $request)
+           {
+               if ($request->users()->hasVerifiedEmail()) {
+                   return [
+                       'message' => 'Email already verified'
+                   ];
+               }
+       
+               if ($request->users()->markEmailAsVerified()) {
+                   event(new Verified($request->user()));
+               }
+       
+               return [
+                   'message'=>'Email has been verified'
+               ];
            }
 }
