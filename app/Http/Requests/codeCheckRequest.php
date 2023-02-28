@@ -24,7 +24,6 @@ class codeCheckRequest extends FormRequest
     public function rules()
     {
         return [
-            //
         ];
     }
 }

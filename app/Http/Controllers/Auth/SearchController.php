@@ -3,27 +3,26 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\search;
 use App\Models\users;
-use Illuminate\Support\Facades\DB;
-
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class SearchController extends Controller
 {
     public function search(Request $request)
     {
-        $search=users::query();
+        $search = users::query();
         if ($request->query('keyword')) {
-            $search= $search->where('name','like','%'.$request->query('keyword'))->paginate('10');
+            $search = $search->where('name', 'like', '%'.$request->query('keyword'))->paginate('10');
         }
-        $search=$search->get();
+        $search = $search->get();
+
         return response()->json([
-            'message'=>'search successful',
-                'data'=>$search
-        ],200);
-// } public function filter(Request $request)
-// {
+            'message' => 'search successful',
+                'data' => $search,
+        ], 200);
+        // } public function filter(Request $request)
+        // {
 //     try {
 //         //code...
 //         $filter = DB::table('users')
@@ -44,6 +43,5 @@ class SearchController extends Controller
 //         // return $this->badRequestResponse("Error", ['errror' => $th->getMessage()]);
 //     }
 //     return $this->successResponse('done', $filter);
-}
-
+    }
 }
