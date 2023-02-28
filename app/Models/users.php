@@ -4,10 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class users extends Model
 {
+    use HasApiTokens;
     use HasFactory;
+    use Notifiable;
     protected $guarded = ['id'];
 
     protected $fillable = [
@@ -40,12 +44,11 @@ class users extends Model
     //         ->orwhere('users_code', 'like', '%' . $name . '%')
     //         ->get();;
     // }
-     public function user()
+    public function user()
     {
-       return $this->belongsTo(users::class);
-     }
+        return $this->belongsTo(users::class);
+    }
     protected $casts = [
-        'email_verified_at' => 'datetime',
+       'email_verified_at' => 'datetime',
     ];
 }
-
