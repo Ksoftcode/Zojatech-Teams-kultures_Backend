@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Notifications\ResetPasswordNotification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
@@ -21,29 +22,12 @@ class users extends Model
         'email',
         'password',
     ];
-    // public function firstname()
-    // {
-    //     return $this->belongsTo(fiesrname::class);
-    // }
-    // public function lastname()
-    // {
-    //     return $this->belongsTo(lastname::class);
-    // }
-    // public function username()
 
-    // {
-    //     return $this->belongsTo(username::class);
-    // }
-    // public function email()
-    // {
-    //     return $this->belongsTo(email::class);
-    // }
-    // public function scopeSearchUsers($q, $name)
-    // {
-    //     return $q->where('users_name', 'LIKE', '%' . $name . '%')
-    //         ->orwhere('users_code', 'like', '%' . $name . '%')
-    //         ->get();;
-    // }
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
     public function user()
     {
         return $this->belongsTo(users::class);
@@ -51,4 +35,11 @@ class users extends Model
     protected $casts = [
        'email_verified_at' => 'datetime',
     ];
+    // public function sendPasswordResetNotification($token)
+    // {
+
+    //     $url = 'https://spa.test/reset-password?token=' . $token;
+
+    //     $this->notify(new ResetPasswordNotification($url));
+    // }
 }

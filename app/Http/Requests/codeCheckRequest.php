@@ -24,8 +24,6 @@ class codeCheckRequest extends FormRequest
     public function rules()
     {
         return [
-            'Token' => ['required','string','exists: resetcodepassword'],
-            
         ];
     }
 }
