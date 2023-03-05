@@ -15,8 +15,12 @@ class Music extends Model
         'world',
         'juju',
     ];
-    public function user()
+    public function users()
     {
         return $this->belongsTo(Music::class);
     }
+    // public function afrobeat()
+    // {
+    //     return $this->belongsTo(afrobeat::class);
+    // }
 }

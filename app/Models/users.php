@@ -5,10 +5,13 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Notifications\ResetPasswordNotification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Model;
 
-class users extends Model
+class users extends Model 
 {
+    use HasApiTokens;
+    use Notifiable;
     use HasFactory;
     protected $guarded = ['id'];
 
@@ -18,11 +21,12 @@ class users extends Model
         'username',
         'email',
         'password',
+     
     ];
-    // protected $hidden = [
-    //     'password',
-    //     'remember_token',
-    // ];
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
     public function user()
     {
         return $this->belongsTo(users::class);

@@ -1,5 +1,5 @@
 <?php
-
+// namespace App\mail; 
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
@@ -7,6 +7,8 @@ use App\Http\Requests\registerRequest;
 use App\Http\Requests\forgetPasswordReques;
 use App\Http\Requests\passwordResetRequest;
 use App\Http\Requests\codeCheckRequest;
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\LoginUserRequest;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Support\Facades\DB;
@@ -18,7 +20,10 @@ use App\Mail\SendCodeResetPassword;
 use App\Models\Crud;
 use App\Models\File;
 use App\Models\Music;
+use Illuminate\Auth\Events\Registered;
+use App\Traits\HttpResponses;
 use App\Models\ResestCodePassword;
+use App\Models\UserVerify;
 use Illuminate\Support\Facades\Redirect;
 use Unicodeveloper\Paystack\Facades\Paystack;
 use Illuminate\Support\Facades\Hash;
@@ -29,86 +34,58 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
-     // Register 
-     public function register(Request $request){
+    use HttpResponses;
 
+    //  register
+    public function register(request $request)
+    {
         $request->validate([
-                   
-       'firstname'=>'required|string',
-       'lastname'=>'required|string',
-       'username'=>'required|string|unique:users',
-       'email'=> 'required|string|unique:users',
-       'country'=>'required|string',
-       'state'=>'required|string',
-       'facebook'=>'required|string',
-       'instagram'=> 'required|string',
-       'linkdin'=> 'required|string',
-       'password'=>'required|string|min:6',
+        'firstname' => 'required|string',
+        'lastname' => 'required|string',
+        'username' => 'required|string',
+        'email' => 'required|string|unique:users',
+        'password' => 'required|string|min:6',
+        ]);
+        $user = new users([
+            'firstname' => $request->firstname,
+            'lastname' => $request->lastname,
+            'email' => $request->email,
+            'username' => $request->username,
+            'password' => Hash::make($request->password),
+        ]);
+        $user->save();
+        // event(new Registered($user));
+
+        $token = $user->createToken('authtoken');
+        return $this->success([
+            'user' => $user,
+            'token' => $user->createToken('API Token of')->plainTextToken,
+        ], 'Register Successful');
+   
+          
        
-       
-       
-       ]);
-       
-       $user=new users([
+    }
+        
+              // login
+              public function login(LoginUserRequest $request)
+              {
+
+                  $request->validated($request->only(['email', 'password']));
+          
+                  if (!Auth::attempt($request->only(['email', 'password']))) {
+                      return $this->error('', 'Credentials do not match', 401);
+                  }
+          
+                  $user = users::where('email', $request->email)->first();
+          
+                  return $this->success([
+                      'user' => $user,
+                      'access_token' => $user->createToken('API Token')->plainTextToken,
+                  ], 'Login successful');
+          
            
-           'firstname'=>$request->firstname,
-           'lastname'=>$request->lastname,
-           'email' =>$request->email,
-           'country'=>$request->country,
-           'state'=>$request->state,
-           'facebook' =>$request->facebook,
-           'instagram' =>$request->instagram,
-           'linkdin'   =>$request->linkdin,
-           'username' =>$request->username,
-           'password' => Hash::make($request->password)
-           
-       ]);
-       $user->save();
-       $token=rand(000,99999);
-    // $token = $user->createToken('authtoken');
-       return response()->json(['message'=>'sucessfuly registered ',$user,$token],200);
-    // return response()->json(
-    //     [
-    //         'message'=>'User Registered',
-    //         'data'=> ['token' => $token->plainTextToken, 'users' => $user]
-    //     ]
-    // );
-       
-           }
-           // login
-           public function login(Request $request){
-               $request->validate([
-                   'email'=>['required','exists:users,email'],
-                   'password'=>'required|string|min:6'
-               ]);
-              $users = users::where('email',$request->email)->first();
-               //  if(!$users || $users->email_verified_at=="") return "email not verified";
-           
-                if(!$users)
-                 return " do not exsit";
-           if (!Hash::check($request->password,$users->password)) {
-             throw ValidationException::withMessages(["message"=>"Wrong details"]);  
-           return response()->json(['message'=>'Wrong details'],404);
-       
-             
-           }
-           return response()->json(['message'=>'successful login'],200);
-           
-           
-           $user= $request->user();
-           $tokenResult= $user->createtoken('personal access token');
-           $token=$tokenResult->token;
-           $token->expires_at=Carbon::now()->addweeks(1);
-           
-           $token->save();
-           return response()->json(['data'=>[
-              'user'=>Auth::user(),
-                'access_token'=>$tokenResult->accesstoken,
-                'token_type'=>'Bearer',
-                'expires_at'=>Carbon::parse($tokenResult->token->expire_at)->toDateTimeString()
-                
-           ]]);
-       }
+              }
+          
        // forgetpassword
        public function forgetPassword(forgetPasswordReques $request)
        {
@@ -199,7 +176,7 @@ class AuthController extends Controller
        {
            $search=Music::query();
            if ($request->query('keyword')) {
-               $search= $search->where('name','like','userame','music','files','email','%'.$request->query('keyword'))->paginate('10');
+               $search= $search->where('name','like','username','music','files','email','%'.$request->query('keyword'))->paginate('10');
            }
            if($request->query("afrobeat")=="afrobeat"){
                $search = $search->where("name",$request->query('afro'));
@@ -237,9 +214,10 @@ class AuthController extends Controller
            public function redirectToGateway(Request $request)
            {
                try{
+                
                    $ref =  Paystack::genTranxRef();
-                   // dd($request->$ref);
-       
+                //    dd($request->all($ref));
+                
                    $request['reference'] = $ref;
                    $request['amount'] = $request->amount * 100;
                    
@@ -262,7 +240,34 @@ class AuthController extends Controller
                            return Paystack::getAuthorizationUrl($paymentDetails)->redirectNow();
        
        
-       }
+       }public function create(Request $request){
+        $request->validate([
+            'country'=>'required|string',
+               'state'=>'required|string',
+                'facebook'=>'required|string',
+               'instagram'=> 'required|string',
+              'linkdin'=> 'required|string',
+            ]);    
+            $user=new Crud([
+           
+             
+                'country'=>$request->country,
+                'state'=>$request->state,
+                'facebook' =>$request->facebook,
+                'instagram' =>$request->instagram,
+                'linkdin'   =>$request->linkdin,
+              
+                
+            ]);
+          
+            $user->save();
+            return response()->json([
+                'message'=>'created  successful',
+                    'data'=>[
+                        "user"=>$user
+                    ]
+            ],200);
+                 }
        
         public function update(Request $request, $id) 
            {

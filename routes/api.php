@@ -40,6 +40,7 @@ Route::post('/CodeCheck', [AuthController::class, 'codeCheck']);
 Route::post('/PasswordResetOpt', [AuthController::class, 'PasswordResetOpt']);
 Route::post('/search', [AuthController::class, 'search']); 
 Route::post('/upload', [AuthController::class, 'fileupload']);
+Route::post('/create', [ AuthController::class, 'create']); 
 Route::post('/update/{id}', [ AuthController::class, 'update']); 
 Route::post('/paystack-pay', [ AuthController::class,'redirectToGateway'])->name('pay');
 Route::get('/payment/callback', [ AuthController::class,'handleGatewayCallback']);
