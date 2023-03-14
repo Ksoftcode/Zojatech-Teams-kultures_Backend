@@ -239,7 +239,8 @@ class AuthController extends Controller
              
                            return Paystack::getAuthorizationUrl($paymentDetails)->redirectNow();
        
-       
+    //    Crud Code
+
        }public function create(Request $request){
         $request->validate([
             'country'=>'required|string',
@@ -268,7 +269,8 @@ class AuthController extends Controller
                     ]
             ],200);
                  }
-       
+    //    updates status for Crud
+
         public function update(Request $request, $id) 
            {
                try {
@@ -286,7 +288,8 @@ class AuthController extends Controller
                    //throw $th;
                 return response()->json(['message'=>'updated sucessfully'],200);
                }
-        //   email verification code.
+       
+               //   email verification code.
 
 
            } public function sendVerificationEmail(Request $request)
