@@ -62,7 +62,7 @@ class AuthController extends Controller
             'token' => $user->createToken('API Token of')->plainTextToken,
         ], 'Register Successful');
    
-          
+        // $this->registerIlluminateMailer();
        
     }
         
