@@ -48,6 +48,7 @@ class SendCodeResetPassword extends Mailable
     // {
     //     return new Content(
     //     view: 'forgetpassword',
+    //     text: 'Email verification'
     //     );
     // }
 

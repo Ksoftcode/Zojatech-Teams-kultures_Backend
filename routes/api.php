@@ -33,7 +33,9 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']); 
 Route::post('/forgetPassword', [AuthController::class, 'forgetPassword']); 
 Route::post('/passwordReset', [ AuthController::class,'passwordReset']);
-Route::post('email/verification-notification', [AuthController::class, 'sendVerificationEmail'])->middleware('auth:sanctum');
+// Route::post('/Verifyuser', [AuthController::class, 'veriyToken']);
+
+// Route::post('email/verification-notification', [AuthController::class, 'sendVerificationEmail'])->middleware('auth:sanctum');
 Route::get('verify-email/{id}/{hash}', [AuthController::class, 'verify'])->name('verification.verify')->middleware('auth:sanctum');  
 Route::post('/logout', [AuthController::class, 'logout']);
 Route::post('/CodeCheck', [AuthController::class, 'codeCheck']); 

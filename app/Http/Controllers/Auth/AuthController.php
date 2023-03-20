@@ -7,6 +7,7 @@ use App\Http\Requests\registerRequest;
 use App\Http\Requests\forgetPasswordReques;
 use App\Http\Requests\passwordResetRequest;
 use App\Http\Requests\codeCheckRequest;
+use App\Http\Requests\EmailVerificationRequest as RequestsEmailVerificationRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\LoginUserRequest;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -24,6 +25,8 @@ use Illuminate\Auth\Events\Registered;
 use App\Traits\HttpResponses;
 use App\Models\ResestCodePassword;
 use App\Models\UserVerify;
+use App\Notifications\EmailNotification;
+use App\Notifications\ResetPasswordNotification;
 use Illuminate\Support\Facades\Redirect;
 use Unicodeveloper\Paystack\Facades\Paystack;
 use Illuminate\Support\Facades\Hash;
@@ -54,19 +57,19 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
         $user->save();
-        // event(new Registered($user));
+        $user->notify(new EmailNotification($user));
 
+        event(new Verified($user));
         $token = $user->createToken('authtoken');
         return $this->success([
             'user' => $user,
             'token' => $user->createToken('API Token of')->plainTextToken,
-        ], 'Register Successful');
-   
-        // $this->registerIlluminateMailer();
+        ], 'Register Successful please check your mail to verify your');
        
     }
-        
-              // login
+         
+             
+               // login
               public function login(LoginUserRequest $request)
               {
 
@@ -148,7 +151,8 @@ class AuthController extends Controller
                DB::table('resetcodepassword')->
                where('email',$user->email)->
                delete();        
-       
+     
+            
                return response()->json([
                  "message"=> "Password reset successful",
                   "data"=>[$user]
@@ -290,21 +294,8 @@ class AuthController extends Controller
                }
        
                //   email verification code.
-
-
-           } public function sendVerificationEmail(Request $request)
-           {
-               if ($request->users()->hasVerifiedEmail()) {
-                   return [
-                       'message' => 'Already Verified'
-                   ];
-               }
-       
-               $request->users()->sendEmailVerificationNotification();
-       
-               return ['status' => 'verification-link-sent'];
-           }
-       
+           } 
+        
            public function verify(EmailVerificationRequest $request)
            {
                if ($request->users()->hasVerifiedEmail()) {
@@ -320,5 +311,30 @@ class AuthController extends Controller
                return [
                    'message'=>'Email has been verified'
                ];
+           }  
+           
+           public function veriyToken(Request $request)
+           {
+               if (empty($request->token)) {
+                   return $this->badRequestResponse('Error', ['invalid token']);
+               }
+       
+       
+               $check = UserVerify::where('token', $request->token)->first();
+               if (is_Null($check)) {
+                   return $this->badRequestResponse('Error', ['invalid token']);
+               }
+       
+       
+       
+       
+               $user = Users::where('email', $check->user->email);
+               if (is_null($check->user->email_verified_at)) {
+                   $user->update([
+                       'email_verified_at' => NOW(),
+                   ]);
+               }
+               $token = $user->first()->createToken('myapp')->plainTextToken;
+               return $this->successResponse('New user added', $token);
            }
 }
