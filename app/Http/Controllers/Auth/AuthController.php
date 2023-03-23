@@ -15,6 +15,9 @@ use App\Models\Music;
 use App\Models\ResestCodePassword;
 use App\Models\user;
 use App\Models\users;
+use App\Models\UserVerify;
+use App\Notifications\EmailNotification;
+use App\Traits\HttpResponses;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
@@ -29,21 +32,16 @@ class AuthController extends Controller
 {
     // Register
 
-    use ResponseTrait;
+    use HttpResponses;
 
     //  register
-    public function register(Request $request)
+    public function register(request $request)
     {
         $request->validate([
             'firstname' => 'required|string',
             'lastname' => 'required|string',
             'username' => 'required|string|unique:users',
             'email' => 'required|string|unique:users',
-            'country' => 'required|string',
-            'state' => 'required|string',
-            'facebook' => 'required|string',
-            'instagram' => 'required|string',
-            'linkdin' => 'required|string',
             'password' => 'required|string|min:6',
             ]);
 
@@ -51,23 +49,30 @@ class AuthController extends Controller
              'firstname' => $request->firstname,
              'lastname' => $request->lastname,
              'email' => $request->email,
-             'country' => $request->country,
-             'state' => $request->state,
-             'facebook' => $request->facebook,
-             'instagram' => $request->instagram,
-             'linkdin' => $request->linkdin,
              'username' => $request->username,
              'password' => Hash::make($request->password),
          ]);
         $user->save();
-        // $token = rand(000, 999);
+        $token = rand(000, 999);
+        UserVerify::create([
+            'user_id' => $user->id,
+            'token' => $token,
 
-        // return response()->json(['message' => 'user has been registerd', $user, $token], 200);
-
-        return $this->successResponse('Register Successful', [
+        ]);
+        Mail::send('email.EmailVerification', ['token' => $token], function ($m) use ($user) {
+            $m->from('Revvex@gmail.com', 'Revvex');
+            $m->to($user->email);
+            $m->subject('Email verification mail');
+        });
+       
+        $user->notify(new EmailNotification($token));
+       
+        $token = $user->createToken('authtoken');
+        return $this->success([
             'user' => $user,
             'token' => $user->createToken('API Token of')->plainTextToken,
-        ]);
+        ], 'Register Successful');
+   
     }
 
     // Login
@@ -77,7 +82,7 @@ class AuthController extends Controller
               $request->validated($request->only(['email', 'password']));
 
               if (!Auth::attempt($request->only(['email', 'password']))) {
-                  return $this->unauthenticatedResponse('Credentials do not match');
+                return $this->error('', 'Credentials do not match', 401);
               }
 
               $user = users::where('email', $request->email)->first();
@@ -111,7 +116,7 @@ class AuthController extends Controller
       }
 
       // code check
-      public function codeCheck(codeCheckRequest $request)
+      public function codeCheck(Request $request)
       {
           $request->validate([
               'Token' => 'required|string|exists:resetcodepasswords',
@@ -247,6 +252,34 @@ class AuthController extends Controller
 
               return Paystack::getAuthorizationUrl($paymentDetails)->redirectNow();
           }
+          public function create(Request $request){
+            $request->validate([
+                'country'=>'required|string',
+                   'state'=>'required|string',
+                    'facebook'=>'required|string',
+                   'instagram'=> 'required|string',
+                  'linkdin'=> 'required|string',
+                ]);    
+                $user=new Crud([
+               
+                 
+                    'country'=>$request->country,
+                    'state'=>$request->state,
+                    'facebook' =>$request->facebook,
+                    'instagram' =>$request->instagram,
+                    'linkdin'   =>$request->linkdin,
+                  
+                    
+                ]);
+              
+                $user->save();
+                return response()->json([
+                    'message'=>'created  successful',
+                        'data'=>[
+                            "user"=>$user
+                        ]
+                ],200);
+                     }
 
        public function update(Request $request, $id)
        {
@@ -264,23 +297,8 @@ class AuthController extends Controller
            }
         //   email verification code.
 
-        // return response()->json(['message' => 'user has been registerd', $user, $token], 200);
        }
-
- public function sendVerificationEmail(Request $request)
- {
-     if ($request->users()->hasVerifiedEmail()) {
-         return [
-             'message' => 'Already Verified',
-         ];
-     }
-
-     $request->users()->sendEmailVerificationNotification();
-
-     return ['status' => 'verification-link-sent'];
- }
-
-          public function verify(EmailVerificationRequest $request)
+         public function verify(EmailVerificationRequest $request)
           {
               if ($request->users()->hasVerifiedEmail()) {
                   return [
@@ -295,5 +313,25 @@ class AuthController extends Controller
               return [
                   'message' => 'Email has been verified',
               ];
+          }
+          public function veriyToken(Request $request)
+          {
+              if (empty($request->token)) {
+                return $this->error('', 'Credentials do not match invalid Token', 401);
+
+              }
+                 $check = UserVerify::where('token', $request->token)->first();
+              if (is_Null($check)) {
+                return $this->error('', 'Credentials do not match invalid  Token', 401);
+
+              }
+              $user = Users::where('email', $check->user->email);
+              if (is_null($check->user->email_verified_at)) {
+                  $user->update([
+                      'email_verified_at' => NOW(),
+                  ]);
+              }
+              $token = $user->first()->createToken('myapp')->plainTextToken;
+              return $this->success('New user added', $token);
           }
 }
