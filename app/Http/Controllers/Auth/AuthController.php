@@ -59,13 +59,13 @@ class AuthController extends Controller
             'token' => $token,
 
         ]);
-        Mail::send('email.EmailVerification', ['token' => $token], function ($m) use ($user) {
-            $m->from('kulture@gmail.com', 'kulture');
-            $m->to($user->email);
-            $m->subject('Email verification mail');
-        });
+        // Mail::send('email.EmailVerification', ['token' => $token], function ($m) use ($user) {
+        //     $m->from('kulture@gmail.com', 'kulture');
+        //     $m->to($user->email);
+        //     $m->subject('Email verification mail');
+        // });
        
-        // $user->notify(new EmailNotification($token));
+        $user->notify(new EmailNotification($token));
        
         $token = $user->createToken('authtoken');
         return $this->success([
