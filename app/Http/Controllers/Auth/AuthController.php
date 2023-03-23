@@ -13,6 +13,7 @@ use App\Models\Crud;
 use App\Models\File;
 use App\Models\Music;
 use App\Models\ResestCodePassword;
+use App\Models\Status;
 use App\Models\user;
 use App\Models\users;
 use App\Models\UserVerify;
@@ -33,6 +34,7 @@ class AuthController extends Controller
     // Register
 
     use HttpResponses;
+    use ResponseTrait;
 
     //  register
     public function register(request $request)
@@ -298,6 +300,7 @@ class AuthController extends Controller
         //   email verification code.
 
        }
+       
          public function verify(EmailVerificationRequest $request)
           {
               if ($request->users()->hasVerifiedEmail()) {
@@ -334,4 +337,20 @@ class AuthController extends Controller
               $token = $user->first()->createToken('myapp')->plainTextToken;
               return $this->success('New user added', $token);
           }
+          public function status(Request $request, $id)
+          {
+              try {
+      
+                 $statusid = Status::findorfail($id);
+                 
+                 $statusid ->name = $request->name;
+                  $statusid ->save();
+              } catch (\Throwable $th) {
+                  //throw $th;
+                  return $this->badRequestResponse('Error', ['error' => $th->getMessage()]);
+              }
+            //   return $this->sucess("updated sucessfully",$statusid );
+              return $this->createdResponse("updated sucessfully", $statusid);
+          }
 }
+ 

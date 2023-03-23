@@ -17,8 +17,8 @@ class StatusController extends Controller
             $statusid ->save();
         } catch (\Throwable $th) {
             //throw $th;
-            return $this->badRequestResponse('Error', ['error' => $th->getMessage()]);
+            return $this->error('Error', ['error' => $th->getMessage()]);
         }
-        return $this->createdResponse("updated sucessfully",$statusid );
+        return $this->sucess("updated sucessfully",$statusid );
     }
 }

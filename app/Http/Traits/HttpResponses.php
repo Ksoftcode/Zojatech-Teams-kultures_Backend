@@ -18,6 +18,7 @@ trait HttpResponses{
             'data' => $data,
         ], $code);
     }
+    
 
 
 
