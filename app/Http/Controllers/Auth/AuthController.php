@@ -15,6 +15,7 @@ use App\Models\Music;
 use App\Models\ResestCodePassword;
 use App\Models\user;
 use App\Models\users;
+use App\Traits\HttpResponses;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
@@ -30,6 +31,7 @@ class AuthController extends Controller
     // Register
 
     use ResponseTrait;
+    use HttpResponses;
 
     //  register
     public function register(Request $request)
