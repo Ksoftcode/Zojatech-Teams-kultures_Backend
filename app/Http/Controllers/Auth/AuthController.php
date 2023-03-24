@@ -16,11 +16,9 @@ use App\Models\ResestCodePassword;
 use App\Models\Status;
 use App\Models\user;
 use App\Models\users;
-<<<<<<< HEAD
-=======
 use App\Models\UserVerify;
 use App\Notifications\EmailNotification;
->>>>>>> 12669577543cd7ea57a6093f205d79590254ed1e
+
 use App\Traits\HttpResponses;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -36,13 +34,13 @@ class AuthController extends Controller
 {
     // Register
 
-<<<<<<< HEAD
+
     use ResponseTrait;
     use HttpResponses;
-=======
+
     use HttpResponses;
     // use ResponseTrait;
->>>>>>> 12669577543cd7ea57a6093f205d79590254ed1e
+
 
     //  register
     public function register(request $request)
