@@ -34,7 +34,7 @@ class AuthController extends Controller
     // Register
 
     use HttpResponses;
-    use ResponseTrait;
+    // use ResponseTrait;
 
     //  register
     public function register(request $request)
