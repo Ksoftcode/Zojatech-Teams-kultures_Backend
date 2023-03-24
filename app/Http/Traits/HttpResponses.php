@@ -1,5 +1,9 @@
 <?php
 namespace App\Traits;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 12669577543cd7ea57a6093f205d79590254ed1e
 trait HttpResponses{
     protected function success($data, $message = null, $code = 200)
     {

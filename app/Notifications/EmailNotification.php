@@ -7,10 +7,10 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class ResetPasswordNotification extends Notification
+class EmailNotification extends Notification
 {
     use Queueable;
-    public $url;
+      public $url;
     /**
      * Create a new notification instance.
      *
@@ -32,20 +32,18 @@ class ResetPasswordNotification extends Notification
         return ['mail'];
     }
 
-    
     /**
      * Get the mail representation of the notification.
      *
      * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
-    public function toMail($notifiable)
+    public function toMail($notifiable): MailMessage
     {
         return (new MailMessage)
-        ->line('Request was recieved for forgot password. kindly open the app and enter the token below')
-        ->action('Click to reset', $this->url)
-        ->line('Thank you for using our application!');
-
+                    ->line('The introduction to the notification.')
+                    ->action('Click to verify your email',url('url'))
+                    ->line('Thank you for using our application!');
     }
 
     /**
