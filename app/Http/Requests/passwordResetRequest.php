@@ -24,8 +24,6 @@ class passwordResetRequest extends FormRequest
     public function rules()
     {
         return [
-            "password" => ['required', 'confirmed']
-            
         ];
     }
 }
