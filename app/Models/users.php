@@ -1,18 +1,18 @@
 <?php
 
 namespace App\Models;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+
 use App\Notifications\ResetPasswordNotification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class users extends Model
 {
     use HasApiTokens;
-    use Notifiable;
     use HasFactory;
+    use Notifiable;
     protected $guarded = ['id'];
 
     protected $fillable = [
@@ -22,16 +22,18 @@ class users extends Model
         'email',
         'password',
     ];
-    // protected $hidden = [
-    //     'password',
-    //     'remember_token',
-    // ];
+
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
     public function user()
     {
         return $this->belongsTo(users::class);
     }
     protected $casts = [
-        'email_verified_at' => 'datetime',
+       'email_verified_at' => 'datetime',
     ];
     // public function sendPasswordResetNotification($token)
     // {
@@ -41,4 +43,3 @@ class users extends Model
     //     $this->notify(new ResetPasswordNotification($url));
     // }
 }
-

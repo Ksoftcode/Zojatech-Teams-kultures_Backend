@@ -8,6 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class File extends Model
 {
     use HasFactory;
-    public $timestamp=false;
-
+    public $timestamp = false;
 }

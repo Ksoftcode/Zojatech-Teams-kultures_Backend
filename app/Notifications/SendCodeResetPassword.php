@@ -7,18 +7,20 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class EmailNotification extends Notification
+class SendCodeResetPassword extends Notification
 {
     use Queueable;
-      public $url;
+    private $token; 
+    private $user;
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct(string $url)
+    public function __construct($user, $token)
     {
-        $this->url = $url;
+        $this->user = $user;
+        $this->token = $token;
     }
 
     /**
@@ -38,16 +40,12 @@ class EmailNotification extends Notification
      * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
-    public function toMail($notifiable): MailMessage
+    public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-
-                    ->action('Click to verify your email',url('EmailVerification'))
-
-                    ->action('Click to verify your email',url('url'))
-
-                    ->line('Thank you for using our application!');
+        ->line($this->user->firstname . "  " . 'Request was recieved for password reset. kindly open the app and enter the token below')
+            ->line($this->token)
+            ->line('Thank you');
     }
 
     /**

@@ -32,7 +32,7 @@ class AuthController extends Controller
 {
     // Register
         use HttpResponses;
-        use ResponseTrait;
+
     //  register
     public function register(request $request)
     {
@@ -53,23 +53,18 @@ class AuthController extends Controller
          ]);
         $user->save();
         $token = rand(000, 999);
-        
-        // Userverify::create([
+        // UserVerify::create([
         //     'user_id' => $user->id,
         //     'token' => $token,
 
         // ]);
-        // Mail::send('EmailVerification', ['token' => $token], function ($m) use ($user) {
+        // Mail::send('email.EmailVerification', ['token' => $token], function ($m) use ($user) {
         //     $m->from('kulture@gmail.com', 'kulture');
         //     $m->to($user->email);
         //     $m->subject('Email verification mail');
         // });
        
         $user->notify(new EmailNotification($token));
-        // $user->notify(new EmailNotification(
-        //     $user,
-        //     $token
-        // ));
        
         $token = $user->createToken('authtoken');
         return $this->success([
@@ -186,7 +181,7 @@ class AuthController extends Controller
 
           return response()->json(['message' => 'Successfully logged out']);
       }
-      // search code
+      // search code /filter
 
       public function search(Request $request)
       {
@@ -194,8 +189,8 @@ class AuthController extends Controller
           if ($request->query('keyword')) {
               $search = $search->where('name', 'like', 'userame', 'music', 'files', 'email', '%'.$request->query('keyword'))->paginate('10');
           }
-          if ($request->query('afro_beat') == 'afro_beat') {
-              $search = $search->where('name', $request->query('afro_beat'));
+          if ($request->query('afrobeat') == 'afrobeat') {
+              $search = $search->where('name', $request->query('afro'));
           }
           if ($request->query('world') == 'world') {
               $search = $search->where('name', $request->query('world'));
@@ -212,33 +207,6 @@ class AuthController extends Controller
                   ],
           ], 200);
       }
-    //   filter
-      public function filter(Request $request)
-      {
-          try {
-              //code...
-              $filter = DB::table('afro_beat')
-                  ->when($request->afro_beat, function ($q, $afro_beat) {
-                      return $q->where('department_name', '=', $afro_beat);
-                  })
-                  ->when($request->world, function ($q, $world) {
-                      return $q->where('world', '=', $world);
-                  })
-                  ->when($request->juju, function ($q, $juju) {
-                      return $q->where('juju', '=', $juju);
-                  })
-                  ->orderByDesc('departments.id')
-                  ->get();
-          } catch (\Throwable $th) {
-              //throw $th;
-              return $this->badRequestResponse("Error", ['errror' => $th->getMessage()]);
-          }
-          return $this->successResponse('done', $filter);
-      }
-
-
-
-
       // fileUpload Code
 
       public function fileupload(Request $request)

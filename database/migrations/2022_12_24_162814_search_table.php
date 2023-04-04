@@ -33,6 +33,9 @@ return new class extends Migration
     public function down()
     {
         Schema::dropIfExists('search');
+<<<<<<<< HEAD:database/migrations/2022_12_22_092516_search_table.php
+========
         
+>>>>>>>> 59acbed07c1ac4f86236d5ed9e7a0f5fa701fc6a:database/migrations/2022_12_24_162814_search_table.php
     }
 };
