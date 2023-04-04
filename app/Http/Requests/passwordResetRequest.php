@@ -24,7 +24,11 @@ class passwordResetRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+        
+                // 'email' => 'required|string|email',
+                // 'oldpassword' => 'required|string',
+                // 'newpassword'=> 'required|string'
+        
         ];
     }
 }

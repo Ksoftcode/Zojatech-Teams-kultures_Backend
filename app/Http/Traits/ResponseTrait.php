@@ -74,11 +74,11 @@ trait ResponseTrait
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function validationErrorResponse(Validator $validator, Request $request = null): \Symfony\Component\HttpFoundation\Response
-    {
-        return (new ValidationResponseException($validator, $request))
-            ->getResponse();
-    }
+    // public function validationErrorResponse(Validator $validator, Request $request = null): \Symfony\Component\HttpFoundation\Response
+    // {
+    //     return (new ValidationResponseException($validator, $request))
+    //         ->getResponse();
+    // }
 
     /**
      * Return an unauthenticated HTTP error response

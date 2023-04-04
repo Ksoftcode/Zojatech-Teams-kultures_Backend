@@ -1,10 +1,11 @@
 <?php
 
 namespace App\Http\Requests;
+use Illuminate\Auth\Events\Lockout;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class registerRequest extends FormRequest
+class LoginUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,18 +24,11 @@ class registerRequest extends FormRequest
      */
     public function rules()
     {
-        
-             
         return [
-            'firstname'=> ['required','string'],
-            'lastname'=>['required','string'],
-            'email'=>['required','exists:users,email'],
-            'username'=>['required','exists:users,username'],
-            'password' => ['required', 'string', 'min:8'],
-
-       
-                   
-               ];
+            
+            'email' => ['required'],
+            'password' => ['required', 'string', 'min:6'],
         
+        ];
     }
 }
