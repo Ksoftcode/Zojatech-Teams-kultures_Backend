@@ -40,7 +40,8 @@ Route::get('verify-email/{id}/{hash}', [AuthController::class, 'verify'])->name(
 Route::post('/logout', [AuthController::class, 'logout']);
 Route::post('/CodeCheck', [AuthController::class, 'codeCheck']); 
 Route::post('/PasswordResetOpt', [AuthController::class, 'PasswordResetOpt']);
-Route::post('/search', [AuthController::class, 'search']); 
+Route::post('/search', [AuthController::class, 'search']);
+Route::post('/filter', [AuthController::class, 'filter']); 
 Route::post('/upload', [AuthController::class, 'fileupload']);
 Route::post('/create', [ AuthController::class, 'create']); 
 Route::post('/update/{id}', [ AuthController::class, 'update']); 

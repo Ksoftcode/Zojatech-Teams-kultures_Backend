@@ -10,6 +10,7 @@ use App\Http\Requests\codeCheckRequest;
 use App\Http\Requests\EmailVerificationRequest as RequestsEmailVerificationRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\LoginUserRequest;
+use App\Http\Traits\ResponseTrait;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Support\Facades\DB;
@@ -38,7 +39,7 @@ use Illuminate\Support\Facades\Auth;
 class AuthController extends Controller
 {
     use HttpResponses;
-
+    use ResponseTrait;
     //  register
     public function register(request $request)
     {
@@ -59,7 +60,7 @@ class AuthController extends Controller
         $user->save();
         $user->notify(new EmailNotification($user));
 
-        event(new Verified($user));
+        // event(new Verified($user));
         $token = $user->createToken('authtoken');
         return $this->success([
             'user' => $user,
@@ -182,7 +183,7 @@ class AuthController extends Controller
            if ($request->query('keyword')) {
                $search= $search->where('name','like','username','music','files','email','%'.$request->query('keyword'))->paginate('10');
            }
-           if($request->query("afrobeat")=="afrobeat"){
+           if($request->query("afro_beat")=="afrobeat"){
                $search = $search->where("name",$request->query('afro'));
            }
            if ($request->query("world")=="world") {
@@ -200,6 +201,30 @@ class AuthController extends Controller
            ],200);
        // 
        }
+    //    filter
+
+    public function filter(Request $request)
+    {
+        try {
+            //code...
+            $filter = DB::table('')
+                ->when($request->afro_beat, function ($q, $afro_beat) {
+                    return $q->where('afro_beat', '=', $afro_beat);
+                })
+                ->when($request->world, function ($q, $world) {
+                    return $q->where('world', '=', $world);
+                })
+                ->when($request->juju, function ($q, $juju) {
+                    return $q->where('juju', '=', $juju);
+                })
+                ->orderByDesc('departments.id')
+                ->get();
+        } catch (\Throwable $th) {
+            //throw $th;
+            return $this->badRequestResponse("Error", ['errror' => $th->getMessage()]);
+        }
+        return $this->successResponse('done', $filter);
+    }
        // fileUpload Code
        
        public function fileupload(Request $request ){
