@@ -13,10 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        
-        schema::create('files', function (Blueprint $table) {
+        Schema::create('userverify', function (Blueprint $table) {
             $table->id();
-            $table->string('files');
+            $table->integer('user_id');
+            $table->string('token');
             $table->timestamps();
         });
     }
@@ -28,7 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('files');
-        
+        Schema::dropIfExists('userverify');
     }
 };
