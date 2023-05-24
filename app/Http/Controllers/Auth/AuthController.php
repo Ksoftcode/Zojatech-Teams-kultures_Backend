@@ -52,7 +52,7 @@ class AuthController extends Controller
              'password' => Hash::make($request->password),
          ]);
         $user->save();
-        $token = rand(000667, 999);
+        // $token = rand(000667, 999);
         // userverify::create([
         //     'user_id' => $user->id,
         //     'token' => $token,
@@ -64,7 +64,7 @@ class AuthController extends Controller
         //     $m->subject('Email verification mail');
         // });
        
-        $user->notify(new EmailNotification($token));
+        // $user->notify(new EmailNotification($token));
        
         $token = $user->createToken('authtoken');
         return $this->success([
